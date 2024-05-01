@@ -1,0 +1,20 @@
+alias(
+    name = "ruff",
+    actual = select({
+        "@bazel_tools//src/conditions:linux_x86_64": "@ruff-linux//:ruff",
+        "@bazel_tools//src/conditions:darwin_arm64": ":ruff-gen-osx",
+    }),
+)
+
+
+genrule(
+    name = "ruff-gen-osx",
+    srcs = ["@ruff-osx-tar//file"],
+    outs = ["ruff-osx"],
+    cmd = "tar -xvf $< && mv ruff $@",
+    executable = True,
+    target_compatible_with = [
+        "@platforms//os:osx",
+        "@platforms//cpu:arm64",
+    ],
+)
